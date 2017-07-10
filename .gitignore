@@ -1,0 +1,4 @@
+*.swp
+*~
+drone/*
+.env

@@ -1,0 +1,61 @@
+pipeline:
+  build:
+    image: ruby:2.3.1
+    commands:
+      - git clone https://github.com/user/appname.git /tmp/appname
+      - bundle install --path vendor/bundle
+      - cp .env.example .env
+      - bundle exec rake db:migrate
+      - bundle exec rspec spec
+    when:
+      branch: [ master, staging ]
+
+  ssh:
+    image: appleboy/drone-ssh
+    user: vagrant
+    password: vagrant
+    host: 192.168.33.10
+    port: 22
+    script:
+      - cd /home/vagrant/deploy/front
+      - /bin/bash -lc "bundle exec cap staging deploy"
+    when:
+      branch: staging
+      status: success
+
+  ssh:
+    image: appleboy/drone-ssh
+    user: vagrant
+    password: vagrant
+    host: 192.168.33.10
+    port: 22
+    script:
+      - cd /home/vagrant/deploy/front
+      - /bin/bash -lc "bundle exec cap production deploy"
+    when:
+      branch: master
+      status: success
+
+  notify:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/xxxxxxx/xxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
+    channel: drone-notifications
+    username: drone
+    when:
+      event: [ push, tag, deployment, pull_request ]
+      status: [ success, failure ]
+
+services:
+  drone_postgresql:
+    image: postgres:9.5
+    environment:
+      - POSTGRES_DB=appname_test
+      - POSTGRES_USER=postgres
+
+  drone_mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=default
+      - MYSQL_USER=default
+      - MYSQL_PASSWORD=secret

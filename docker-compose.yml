@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  drone-server:
+    image: drone/drone:0.7.3
+    ports:
+      - 80:8000
+    volumes:
+      - ./drone:/var/lib/drone/
+    restart: always
+    environment:
+      # Enable to register
+      - DRONE_OPEN=true
+      # Hostname of drone 
+      - DRONE_HOST=${DRONE_HOST}
+      # Using github
+      - DRONE_GITHUB=true
+      # Issue it on Github
+      - DRONE_GITHUB_CLIENT=${DRONE_GITHUB_CLIENT}
+      # Issue it on Github
+      - DRONE_GITHUB_SECRET=${DRONE_GITHUB_SECRET}
+      # Set random str as secret key
+      - DRONE_SECRET=${DRONE_SECRET}
+      # Specified it if you use Github Enterprise
+      - DRONE_GITHUB_URL=${DRONE_GITHUB_URL}
+      # Github Enterprise with private mode
+      - DRONE_GITHUB_PRIVATE_MODE=true
+
+  drone-agent:
+    image: drone/drone:0.7.3
+    command: agent
+    restart: always
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_SERVER=ws://drone-server:8000/ws/broker
+      - DRONE_SECRET=${DRONE_SECRET}

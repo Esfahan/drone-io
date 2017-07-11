@@ -1,4 +1,13 @@
 pipeline:
+  restore-cache:
+    image: drillster/drone-volume-cache
+    restore: true
+    mount:
+      - ./vendor
+    volumes:
+      - /tmp/cache:/cache
+    ttl: 10
+
   build:
     image: ruby:2.3.1
     commands:
@@ -9,6 +18,15 @@ pipeline:
       - bundle exec rspec spec
     when:
       branch: [ master, staging ]
+
+  rebuild-cache:
+    image: drillster/drone-volume-cache
+    rebuild: true
+    mount:
+      - ./vendor
+    volumes:
+      - /tmp/cache:/cache
+    ttl: 10
 
   ssh:
     image: appleboy/drone-ssh

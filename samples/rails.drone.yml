@@ -1,14 +1,41 @@
 pipeline:
+  restore-cache:
+    #image: drillster/drone-volume-cache
+    image: esfahan/drone-volume-cache
+    restore: true
+    mount:
+      - ./vendor
+    volumes:
+      - /tmp/cache:/cache
+    ttl: 7
+    when:
+      branch: [ master, staging ]
+      event: push
+
   build:
     image: ruby:2.3.1
     commands:
       - git clone https://github.com/user/appname.git /tmp/appname
       - bundle install --path vendor/bundle
-      - cp .env.example .env
+      - cp .env.drone .env
       - bundle exec rake db:migrate
       - bundle exec rspec spec
     when:
       branch: [ master, staging ]
+      event: push
+
+  rebuild-cache:
+    #image: drillster/drone-volume-cache
+    image: esfahan/drone-volume-cache
+    rebuild: true
+    mount:
+      - ./vendor
+    volumes:
+      - /tmp/cache:/cache
+    ttl: 7
+    when:
+      branch: [ master, staging ]
+      event: push
 
   ssh:
     image: appleboy/drone-ssh
@@ -21,6 +48,7 @@ pipeline:
       - /bin/bash -lc "bundle exec cap staging deploy"
     when:
       branch: staging
+      event: push
       status: success
 
   ssh:
@@ -34,6 +62,7 @@ pipeline:
       - /bin/bash -lc "bundle exec cap production deploy"
     when:
       branch: master
+      event: push
       status: success
 
   notify:

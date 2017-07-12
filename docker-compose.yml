@@ -9,6 +9,8 @@ services:
       - ./drone:/var/lib/drone/
     restart: always
     environment:
+      # set ADMIN USER on drone
+      - DRONE_ADMIN=${DRONE_ADMIN}
       # Enable to register
       - DRONE_OPEN=true
       # Hostname of drone 

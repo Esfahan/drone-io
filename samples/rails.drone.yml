@@ -43,6 +43,7 @@ pipeline:
     password: vagrant
     host: 192.168.33.10
     port: 22
+    command_timeout: 300
     script:
       - cd /home/vagrant/deploy/front
       - /bin/bash -lc "bundle exec cap staging deploy"
@@ -57,6 +58,7 @@ pipeline:
     password: vagrant
     host: 192.168.33.10
     port: 22
+    command_timeout: 300
     script:
       - cd /home/vagrant/deploy/front
       - /bin/bash -lc "bundle exec cap production deploy"

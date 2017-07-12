@@ -1,6 +1,7 @@
 pipeline:
   restore-cache:
-    image: drillster/drone-volume-cache
+    #image: drillster/drone-volume-cache
+    image: esfahan/drone-volume-cache
     restore: true
     mount:
       - ./vendor
@@ -24,7 +25,8 @@ pipeline:
       event: push
 
   rebuild-cache:
-    image: drillster/drone-volume-cache
+    #image: drillster/drone-volume-cache
+    image: esfahan/drone-volume-cache
     rebuild: true
     mount:
       - ./vendor

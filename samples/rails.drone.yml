@@ -6,7 +6,7 @@ pipeline:
       - ./vendor
     volumes:
       - /tmp/cache:/cache
-    ttl: 10
+    ttl: 7
     when:
       branch: [ master, staging ]
       event: push
@@ -30,7 +30,7 @@ pipeline:
       - ./vendor
     volumes:
       - /tmp/cache:/cache
-    ttl: 10
+    ttl: 7
     when:
       branch: [ master, staging ]
       event: push

@@ -53,6 +53,7 @@ pipeline:
   ssh:
     image: appleboy/drone-ssh
     user: vagrant
+    # Specify a local path not a path in docker.
     key_path: ~/.ssh/id_rsa
     host: 192.168.33.10
     port: 22
